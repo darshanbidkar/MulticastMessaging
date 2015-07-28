@@ -90,27 +90,25 @@ public class TCPWrapper {
 						mSock.getInputStream()));
 
 			} catch (IOException e) {
-
 				e.printStackTrace();
 			}
 		}
 
 		@Override
 		public void run() {
-			String finalMessage = "";
-			try {
-				while ((message = mReader.readLine()) != null) {
-					System.out.println("Client: " + message);
-					finalMessage += message;
+			while (isRunning && mServerSocket != null) {
+				String finalMessage = "";
+				try {
+					while ((message = mReader.readLine()) != null) {
+						System.out.println("Client: " + message);
+						finalMessage += message;
+					}
+				} catch (IOException e) {
+
 				}
-			} catch (IOException e) {
-
+				TCPWrapper.this.mInterface.messageReceived(finalMessage);
 			}
-
-			TCPWrapper.this.mInterface.messageReceived(finalMessage);
-
 		}
-
 	}
 
 	public void closeServer() {
