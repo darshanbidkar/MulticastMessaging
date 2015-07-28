@@ -11,6 +11,7 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketException;
 import java.net.UnknownHostException;
 
 public class TCPWrapper {
@@ -19,6 +20,7 @@ public class TCPWrapper {
 	private NetworkInterface mInterface;
 	private static TCPWrapper sNetworkWrapper;
 	private volatile boolean isRunning = true;
+	public SocketHandler handler;
 
 	private TCPWrapper(NetworkInterface nInterface) {
 		this.mInterface = nInterface;
@@ -31,7 +33,9 @@ public class TCPWrapper {
 						Socket sock;
 						try {
 							sock = mServerSocket.accept();
-							Thread t = new Thread(new ClientHandler(sock));
+							handler = new SocketHandler(sock);
+							// mInterface.addConnection(handler);
+							Thread t = new Thread(handler);
 							t.start();
 						} catch (IOException e) {
 							e.printStackTrace();
@@ -42,7 +46,6 @@ public class TCPWrapper {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-
 	}
 
 	public synchronized static TCPWrapper getInstance(
@@ -53,36 +56,12 @@ public class TCPWrapper {
 		return sNetworkWrapper;
 	}
 
-	public void sendMessage(final String message, final String address,
-			final int port) {
-		new Thread() {
-			private PrintWriter mWriter;
-
-			@Override
-			public void run() {
-				try {
-					Socket sock = new Socket(address, port);
-					mWriter = new PrintWriter(sock.getOutputStream());
-					mWriter.println(message);
-					mWriter.flush();
-					sock.close();
-				} catch (UnknownHostException e) {
-
-					e.printStackTrace();
-				} catch (IOException e) {
-
-					e.printStackTrace();
-				}
-			}
-		}.start();
-	}
-
-	private class ClientHandler implements Runnable {
+	class SocketHandler implements Runnable {
 		private Socket mSock;
 		private BufferedReader mReader;
 		private String message;
 
-		public ClientHandler(Socket newSock) {
+		public SocketHandler(Socket newSock) {
 
 			try {
 				mSock = newSock;
@@ -94,9 +73,42 @@ public class TCPWrapper {
 			}
 		}
 
+		public void closeSocket() {
+			try {
+				mSock.close();
+			} catch (IOException e) {
+			}
+		}
+
+		public void sendMessage(final String message) {
+			System.out.println("Sending: " + message);
+			if (mSock.isClosed()) {
+				System.out.println("Socket already closed");
+				return;
+			}
+
+			new Thread() {
+				private PrintWriter mWriter;
+
+				@Override
+				public void run() {
+					try {
+						mWriter = new PrintWriter(mSock.getOutputStream());
+						mWriter.println(message);
+						mWriter.flush();
+					} catch (UnknownHostException e) {
+						e.printStackTrace();
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+				}
+			}.start();
+		}
+
+		// Reading from socket stream
 		@Override
 		public void run() {
-			while (isRunning && mServerSocket != null) {
+			while (isRunning && mServerSocket != null && !mSock.isClosed()) {
 				String finalMessage = "";
 				try {
 					while ((message = mReader.readLine()) != null) {
@@ -104,8 +116,9 @@ public class TCPWrapper {
 						finalMessage += message;
 					}
 				} catch (IOException e) {
-
+					e.printStackTrace();
 				}
+				System.out.println("Received: " + finalMessage);
 				TCPWrapper.this.mInterface.messageReceived(finalMessage);
 			}
 		}

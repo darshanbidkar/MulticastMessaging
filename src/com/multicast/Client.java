@@ -3,6 +3,8 @@
  */
 package com.multicast;
 
+import java.util.logging.SocketHandler;
+
 import com.multicast.networking.NetworkInterface;
 import com.multicast.networking.TCPWrapper;
 import com.multicast.networking.UDPWrapper;
@@ -11,7 +13,7 @@ import com.multicast.networking.UDPWrapper;
  * @author darshanbidkar
  *
  */
-public class Client implements NetworkInterface {
+public class Client {
 
 	private TCPWrapper tcpWrapper;
 	private UDPWrapper udpWrapper;
@@ -23,11 +25,6 @@ public class Client implements NetworkInterface {
 	 * com.multicast.networking.NetworkInterface#messageReceived(java.lang.String
 	 * )
 	 */
-	@Override
-	public void messageReceived(String message) {
-		// TODO Auto-generated method stub
-
-	}
 
 	/**
 	 * @param args

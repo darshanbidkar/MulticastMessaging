@@ -14,32 +14,30 @@ import com.multicast.networking.UDPWrapper;
  * @author darshanbidkar
  *
  */
-public class Server implements NetworkInterface {
+public class Server {
 
 	private TCPWrapper tcpWrapper;
 	private UDPWrapper udpWrapper;
-	HashMap proxyMap = new HashMap<Proxy, ArrayList<String>>();
-	HashMap groupMap = new HashMap<String, ArrayList<Proxy>>();
+	private HashMap<Proxy, ArrayList<String>> proxyMap = new HashMap<Proxy, ArrayList<String>>();
+	private HashMap<String, ArrayList<Proxy>> groupMap = new HashMap<String, ArrayList<Proxy>>();
 
 	int streams = 0;
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.multicast.networking.NetworkInterface#messageReceived(java.lang.String
-	 * )
-	 */
-	@Override
-	public void messageReceived(String message) {
-
-	}
 
 	/**
 	 * @param args
 	 */
 	public static void main(String[] args) {
 
+	}
+
+	public static void addShutdownHook(NetworkInterface p) {
+		Runtime runtime = Runtime.getRuntime();
+		runtime.addShutdownHook(new Thread() {
+			@Override
+			public void run() {
+				TCPWrapper.getInstance(p).closeServer();
+			}
+		});
 	}
 
 }

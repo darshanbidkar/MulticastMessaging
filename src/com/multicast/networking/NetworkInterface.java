@@ -6,4 +6,6 @@ package com.multicast.networking;
  */
 public interface NetworkInterface {
 	public void messageReceived(String message);
+
+	//public void addConnection(SocketHandler handler);
 }
