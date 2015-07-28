@@ -21,7 +21,7 @@ public class TempTestClient {
 	 */
 	public static void main(String[] args) {
 		try {
-			final Socket socket = new Socket(args[0], 5050);
+			final Socket socket = new Socket("192.168.43.197", 5050);
 			new Thread() {
 				@Override
 				public void run() {
@@ -50,6 +50,7 @@ public class TempTestClient {
 			PrintWriter writer = new PrintWriter(socket.getOutputStream());
 			while (!(msg = br.readLine()).equalsIgnoreCase("end")) {
 				writer.println(msg);
+				writer.flush();
 			}
 
 		} catch (UnknownHostException e) {
