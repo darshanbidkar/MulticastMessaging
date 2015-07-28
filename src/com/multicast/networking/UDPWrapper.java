@@ -1,9 +1,7 @@
-package com.multicast.networking;
-
 /**
- * @author darshanbidkar
- *
+ * 
  */
+package com.multicast.networking;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -13,14 +11,17 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
-public class NetworkWrapper {
-
+/**
+ * @author darshanbidkar
+ *
+ */
+public class UDPWrapper {
 	private ServerSocket mServerSocket;
 	private NetworkInterface mInterface;
-	private static NetworkWrapper sNetworkWrapper;
+	private static UDPWrapper sNetworkWrapper;
 	private volatile boolean isRunning = true;
 
-	private NetworkWrapper(NetworkInterface nInterface) {
+	private UDPWrapper(NetworkInterface nInterface) {
 		this.mInterface = nInterface;
 		try {
 			mServerSocket = new ServerSocket(5050);
@@ -45,10 +46,10 @@ public class NetworkWrapper {
 
 	}
 
-	public synchronized static NetworkWrapper getInstance(
+	public synchronized static UDPWrapper getInstance(
 			NetworkInterface nInterface) {
-		if (NetworkWrapper.sNetworkWrapper == null) {
-			NetworkWrapper.sNetworkWrapper = new NetworkWrapper(nInterface);
+		if (UDPWrapper.sNetworkWrapper == null) {
+			UDPWrapper.sNetworkWrapper = new UDPWrapper(nInterface);
 		}
 		return sNetworkWrapper;
 	}
@@ -106,9 +107,7 @@ public class NetworkWrapper {
 			} catch (IOException e) {
 
 			}
-
-			NetworkWrapper.this.mInterface.messageReceived(finalMessage);
-
+			UDPWrapper.this.mInterface.messageReceived(finalMessage);
 		}
 
 	}
@@ -124,5 +123,4 @@ public class NetworkWrapper {
 			}
 		}
 	}
-
 }
