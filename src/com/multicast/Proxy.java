@@ -49,7 +49,7 @@ public class Proxy extends NetworkInterface {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		Proxy proxy = new Proxy("");
+		new Proxy(args[0]);
 	}
 
 	private JSONObject addIPToSource(JSONObject request) {

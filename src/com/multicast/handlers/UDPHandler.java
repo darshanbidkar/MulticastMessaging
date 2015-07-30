@@ -51,7 +51,7 @@ public class UDPHandler implements Runnable {
 	}
 
 	public void run() {
-		byte[] buf = new byte[1024];
+		final byte[] buf = new byte[1024];
 
 		new Thread() {
 			DatagramPacket receivePacket;

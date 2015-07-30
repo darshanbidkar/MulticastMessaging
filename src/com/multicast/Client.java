@@ -72,7 +72,7 @@ public class Client extends NetworkInterface {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		Client client = new Client("", "");
+		Client client = new Client(args[0], args[1]);
 		try {
 			client.sendJoin();
 			client.wait();
