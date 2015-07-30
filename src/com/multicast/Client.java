@@ -68,28 +68,41 @@ public class Client extends NetworkInterface {
 		}
 	}
 
+	private JSONObject createMessage(String message) {
+		try {
+			JSONObject messageObject = new JSONObject();
+			messageObject.put(NetworkConstants.TYPE, NetworkConstants.DATA);
+			JSONObject payload = new JSONObject();
+			payload.put(NetworkConstants.DATA, message);
+			messageObject.put(NetworkConstants.PAYLOAD, payload);
+			return messageObject;
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
 	/**
 	 * @param args
 	 */
 	public static void main(String[] args) {
 		Client client = new Client(args[0], args[1]);
-		try {
-			client.sendJoin();
-			client.wait();
+		client.sendJoin();
+		// client.wait();
 
-			// Join successful, let user type any multicast message
-			Scanner scanner = new Scanner(System.in);
-			String message = scanner.nextLine();
-			while (!message.equalsIgnoreCase("end")) {
-				client.udphandler.sendUDPMessage(message, client.parentIP);
-			}
-			scanner.close();
-			System.out.println("Leaving group: " + client.groupName);
-			client.leaveGroup();
-			client.closeServers();
-		} catch (InterruptedException e) {
-			e.printStackTrace();
+		// Join successful, let user type any multicast message
+		Scanner scanner = new Scanner(System.in);
+		String message = scanner.nextLine();
+		while (!message.equalsIgnoreCase("end")) {
+			JSONObject object = client.createMessage(message);
+			client.udphandler
+					.sendUDPMessage(object.toString(), client.parentIP);
+			message = scanner.nextLine();
 		}
+		scanner.close();
+		System.out.println("Leaving group: " + client.groupName);
+		client.leaveGroup();
+		client.closeServers();
 	}
 
 	@Override
@@ -98,10 +111,10 @@ public class Client extends NetworkInterface {
 			JSONObject object = new JSONObject(message);
 			switch (object.getString(NetworkConstants.TYPE)) {
 			case NetworkConstants.JOIN_RESPONSE:
-				this.notify();
+				// this.notify();
 				if (object.getJSONObject(NetworkConstants.PAYLOAD).getBoolean(
 						NetworkConstants.STATUS)) {
-					System.out.println("Connected to proxy!\nSend Message: ");
+					System.out.println("Connected to proxy!\nSend a Message: ");
 				} else {
 					System.out.println(object.getJSONObject(
 							NetworkConstants.PAYLOAD).get(

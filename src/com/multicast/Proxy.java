@@ -101,7 +101,6 @@ public class Proxy extends NetworkInterface {
 	private void forwardMessage(JSONObject request) {
 		String destinationIP = getDestinationIP(request);
 		TCPHandler handler = childConnectionMap.get(destinationIP);
-		System.out.println(destinationIP);
 		handler.sendMessage(request.toString());
 	}
 
@@ -121,7 +120,6 @@ public class Proxy extends NetworkInterface {
 
 	@Override
 	public synchronized void messageReceived(String message) {
-		System.out.println("received: " + message);
 		try {
 			JSONObject object = new JSONObject(message);
 			switch (object.getString(NetworkConstants.TYPE)) {
