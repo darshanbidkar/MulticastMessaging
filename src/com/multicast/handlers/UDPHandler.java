@@ -16,7 +16,7 @@ import com.multicast.networking.NetworkInterface;
  *
  */
 public class UDPHandler implements Runnable {
-	private boolean isRunning = true;
+	private volatile boolean isRunning = true;
 	private DatagramSocket mUDPSocket;
 	private NetworkInterface mInterface;
 

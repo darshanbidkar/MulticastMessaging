@@ -20,7 +20,7 @@ public abstract class NetworkInterface {
 
 	private ServerSocket mServerSocket;
 	private DatagramSocket mUDPSocket;
-	private volatile boolean isRunning = true;
+	protected volatile boolean isRunning = true;
 	protected UDPHandler udphandler;
 
 	public NetworkInterface() {
@@ -54,7 +54,7 @@ public abstract class NetworkInterface {
 						Socket sock;
 						try {
 							sock = mServerSocket.accept();
-
+							addConnection(sock);
 						} catch (IOException e) {
 							e.printStackTrace();
 						}
@@ -67,7 +67,9 @@ public abstract class NetworkInterface {
 	}
 
 	public void closeServers() {
-
+		isRunning = false;
+		closeTCPServer();
+		udphandler.closeServer();
 	}
 
 	protected TCPHandler createClientSocket(String parentIP) {
@@ -82,9 +84,9 @@ public abstract class NetworkInterface {
 	}
 
 	private void closeTCPServer() {
-		if (this.isRunning && this.mServerSocket != null) {
+		this.isRunning = false;
+		if (this.mServerSocket != null) {
 			System.out.println("closing server");
-			this.isRunning = false;
 			try {
 				this.mServerSocket.close();
 			} catch (IOException e) {
