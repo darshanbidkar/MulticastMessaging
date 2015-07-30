@@ -31,7 +31,7 @@ public class Proxy extends NetworkInterface {
 	private String selfIP;
 
 	public Proxy(String parentIP) {
-		super(false);
+		super(true);
 		parentHandler = super.createClientSocket(parentIP);
 
 		childConnectionMap = new HashMap<String, TCPHandler>();
@@ -50,6 +50,7 @@ public class Proxy extends NetworkInterface {
 	 */
 	public static void main(String[] args) {
 		new Proxy(args[0]);
+
 	}
 
 	private JSONObject addIPToSource(JSONObject request) {
@@ -99,6 +100,7 @@ public class Proxy extends NetworkInterface {
 
 	@Override
 	public void messageReceived(String message) {
+		System.out.println("received: " + message);
 		try {
 			JSONObject object = new JSONObject(message);
 			switch (object.getString(NetworkConstants.TYPE)) {
@@ -213,6 +215,7 @@ public class Proxy extends NetworkInterface {
 	@Override
 	public void addConnection(Socket newSock) {
 		TCPHandler tcphandler = new TCPHandler(newSock, this);
+		new Thread(tcphandler).start();
 		childConnectionMap.put(newSock.getInetAddress().getHostAddress(),
 				tcphandler);
 	}

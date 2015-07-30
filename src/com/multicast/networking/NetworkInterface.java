@@ -54,6 +54,8 @@ public abstract class NetworkInterface {
 						Socket sock;
 						try {
 							sock = mServerSocket.accept();
+							System.out.println("Got incoming connection: "
+									+ sock.getInetAddress().getHostAddress());
 							addConnection(sock);
 						} catch (IOException e) {
 							e.printStackTrace();
@@ -76,6 +78,7 @@ public abstract class NetworkInterface {
 		try {
 			Socket socket = new Socket(parentIP, 5050);
 			TCPHandler handler = new TCPHandler(socket, this);
+			new Thread(handler).start();
 			return handler;
 		} catch (IOException e) {
 			e.printStackTrace();

@@ -172,6 +172,7 @@ public class Server extends NetworkInterface {
 	@Override
 	public void addConnection(Socket newSock) {
 		TCPHandler tcphandler = new TCPHandler(newSock, this);
+		new Thread(tcphandler).start();
 		childConnectionMap.put(newSock.getInetAddress().getHostAddress(),
 				tcphandler);
 

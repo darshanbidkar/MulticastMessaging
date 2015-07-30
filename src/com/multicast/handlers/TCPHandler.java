@@ -24,6 +24,8 @@ public class TCPHandler implements Runnable {
 	private NetworkInterface mInterface;
 
 	public TCPHandler(Socket newSock, NetworkInterface nInterface) {
+		System.out.println("Creating TCP Handler for: "
+				+ newSock.getInetAddress().getHostAddress());
 		mInterface = nInterface;
 		isRunning = true;
 		try {

@@ -27,7 +27,7 @@ public class Client extends NetworkInterface {
 	private String selfIP;
 
 	public Client(String parentIP, String groupName) {
-		super(true);
+		super(false);
 		this.parentIP = parentIP;
 		this.groupName = groupName;
 		parentHandler = super.createClientSocket(parentIP);
