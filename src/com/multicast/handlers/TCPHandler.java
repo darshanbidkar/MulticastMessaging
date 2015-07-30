@@ -86,6 +86,8 @@ public class TCPHandler implements Runnable {
 				}
 			} catch (IOException e) {
 				e.printStackTrace();
+				System.out.println("Closing connection");
+				closeSocket();
 			}
 			System.out.println("Received: " + finalMessage);
 			mInterface.messageReceived(finalMessage);

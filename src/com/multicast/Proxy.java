@@ -68,7 +68,9 @@ public class Proxy extends NetworkInterface {
 
 	private boolean isClient(JSONObject request) {
 		try {
-			String src = request.getString(NetworkConstants.SOURCE);
+			String src = request
+					.getJSONObject(NetworkConstants.PAYLOAD).getString(
+							NetworkConstants.SOURCE);
 			return !src.contains(",");
 		} catch (JSONException e) {
 			e.printStackTrace();
