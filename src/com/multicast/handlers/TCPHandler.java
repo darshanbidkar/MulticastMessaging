@@ -80,10 +80,11 @@ public class TCPHandler implements Runnable {
 		while (isRunning && !mSock.isClosed()) {
 			String finalMessage = "";
 			try {
-				while ((message = mReader.readLine()) != null) {
+				message = mReader.readLine();
+				//while ((message = mReader.readLine()) != null) {
 					System.out.println("Client: " + message);
 					finalMessage += message;
-				}
+				//}
 			} catch (IOException e) {
 				e.printStackTrace();
 				System.out.println("Closing connection");

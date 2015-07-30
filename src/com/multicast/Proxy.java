@@ -55,11 +55,14 @@ public class Proxy extends NetworkInterface {
 
 	private JSONObject addIPToSource(JSONObject request) {
 		try {
-			String srcfield = request.getString(NetworkConstants.SOURCE);
+			String srcfield = request.getJSONObject(NetworkConstants.PAYLOAD)
+					.getString(NetworkConstants.SOURCE);
 			srcfield += "," + selfIP;
 
-			request.remove(NetworkConstants.SOURCE);
-			request.put(NetworkConstants.SOURCE, srcfield);
+			request.getJSONObject(NetworkConstants.PAYLOAD).remove(
+					NetworkConstants.SOURCE);
+			request.getJSONObject(NetworkConstants.PAYLOAD).put(
+					NetworkConstants.SOURCE, srcfield);
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
@@ -68,9 +71,8 @@ public class Proxy extends NetworkInterface {
 
 	private boolean isClient(JSONObject request) {
 		try {
-			String src = request
-					.getJSONObject(NetworkConstants.PAYLOAD).getString(
-							NetworkConstants.SOURCE);
+			String src = request.getJSONObject(NetworkConstants.PAYLOAD)
+					.getString(NetworkConstants.SOURCE);
 			return !src.contains(",");
 		} catch (JSONException e) {
 			e.printStackTrace();
@@ -81,12 +83,15 @@ public class Proxy extends NetworkInterface {
 	private String getDestinationIP(JSONObject request) {
 		String destinationIP = null;
 		try {
-			String src = request.getString(NetworkConstants.SOURCE);
+			String src = request.getJSONObject(NetworkConstants.PAYLOAD)
+					.getString(NetworkConstants.SOURCE);
 			destinationIP = src.substring(src.lastIndexOf(",") + 1);
 			if (isClient(request)) {
 				src = src.substring(0, src.lastIndexOf(","));
-				request.remove(NetworkConstants.SOURCE);
-				request.put(NetworkConstants.SOURCE, src);
+				request.getJSONObject(NetworkConstants.PAYLOAD).remove(
+						NetworkConstants.SOURCE);
+				request.getJSONObject(NetworkConstants.PAYLOAD).put(
+						NetworkConstants.SOURCE, src);
 			}
 		} catch (JSONException e) {
 			e.printStackTrace();
