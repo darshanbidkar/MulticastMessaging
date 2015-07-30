@@ -30,6 +30,7 @@ public class TCPHandler implements Runnable {
 		isRunning = true;
 		try {
 			mSock = newSock;
+			mSock.setSoTimeout(0);
 			mReader = new BufferedReader(new InputStreamReader(
 					mSock.getInputStream()));
 
@@ -76,19 +77,18 @@ public class TCPHandler implements Runnable {
 	// Reading from socket stream
 	@Override
 	public void run() {
-		String message="";
+		String message = "";
 		while (isRunning && !mSock.isClosed()) {
-			String finalMessage = "";
 			try {
 				message = mReader.readLine();
-				//while ((message = mReader.readLine()) != null) {
-					System.out.println("Client: " + message);
-					finalMessage += message;
-				//}
+				// while ((message = mReader.readLine()) != null) {
+				System.out.println("Client: " + message);
+				// }
 			} catch (IOException e) {
 				e.printStackTrace();
 				System.out.println("Closing connection");
 				closeSocket();
+				continue;
 			}
 			System.out.println("Received: " + message);
 			mInterface.messageReceived(message);

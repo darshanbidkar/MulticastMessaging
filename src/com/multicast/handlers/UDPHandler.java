@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.net.SocketException;
 import java.net.UnknownHostException;
 
 import com.multicast.networking.NetworkInterface;
@@ -22,6 +23,11 @@ public class UDPHandler implements Runnable {
 
 	public UDPHandler(DatagramSocket udpSocket, NetworkInterface nInterface) {
 		mUDPSocket = udpSocket;
+		try {
+			mUDPSocket.setSoTimeout(0);
+		} catch (SocketException e) {
+			e.printStackTrace();
+		}
 		this.mInterface = nInterface;
 	}
 

@@ -39,6 +39,7 @@ public abstract class NetworkInterface {
 		try {
 			mUDPSocket = new DatagramSocket(5051);
 			udphandler = new UDPHandler(mUDPSocket, this);
+			new Thread(udphandler).start();
 		} catch (SocketException e) {
 			e.printStackTrace();
 		}

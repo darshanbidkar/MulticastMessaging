@@ -87,7 +87,6 @@ public class Proxy extends NetworkInterface {
 					.getString(NetworkConstants.SOURCE);
 			destinationIP = src.substring(src.lastIndexOf(",") + 1);
 			if (isClient(request)) {
-				src = src.substring(0, src.lastIndexOf(","));
 				request.getJSONObject(NetworkConstants.PAYLOAD).remove(
 						NetworkConstants.SOURCE);
 				request.getJSONObject(NetworkConstants.PAYLOAD).put(
