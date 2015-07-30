@@ -76,7 +76,7 @@ public class TCPHandler implements Runnable {
 	// Reading from socket stream
 	@Override
 	public void run() {
-		String message;
+		String message="";
 		while (isRunning && !mSock.isClosed()) {
 			String finalMessage = "";
 			try {
@@ -90,8 +90,8 @@ public class TCPHandler implements Runnable {
 				System.out.println("Closing connection");
 				closeSocket();
 			}
-			System.out.println("Received: " + finalMessage);
-			mInterface.messageReceived(finalMessage);
+			System.out.println("Received: " + message);
+			mInterface.messageReceived(message);
 		}
 	}
 }

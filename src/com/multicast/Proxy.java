@@ -101,12 +101,27 @@ public class Proxy extends NetworkInterface {
 
 	private void forwardMessage(JSONObject request) {
 		String destinationIP = getDestinationIP(request);
-		TCPHandler hanlder = childConnectionMap.get(destinationIP);
-		hanlder.sendMessage(request.toString());
+		TCPHandler handler = childConnectionMap.get(destinationIP);
+		System.out.println(destinationIP);
+		handler.sendMessage(request.toString());
+	}
+
+	private void removeSelfIP(JSONObject request) {
+		try {
+			String src = request.getJSONObject(NetworkConstants.PAYLOAD)
+					.getString(NetworkConstants.SOURCE);
+			src = src.substring(0, src.lastIndexOf(","));
+			request.getJSONObject(NetworkConstants.PAYLOAD).remove(
+					NetworkConstants.SOURCE);
+			request.getJSONObject(NetworkConstants.PAYLOAD).put(
+					NetworkConstants.SOURCE, src);
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
 	}
 
 	@Override
-	public void messageReceived(String message) {
+	public synchronized void messageReceived(String message) {
 		System.out.println("received: " + message);
 		try {
 			JSONObject object = new JSONObject(message);
@@ -144,6 +159,7 @@ public class Proxy extends NetworkInterface {
 				break;
 
 			case NetworkConstants.JOIN_RESPONSE:
+				removeSelfIP(object);
 				if (object.has(NetworkConstants.PAYLOAD)
 						&& object.getJSONObject(NetworkConstants.PAYLOAD)
 								.getBoolean(NetworkConstants.STATUS)) {
