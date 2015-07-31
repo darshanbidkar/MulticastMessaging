@@ -118,6 +118,11 @@ public class Proxy extends NetworkInterface {
 		}
 	}
 
+	private void forwardUDPMessage(JSONObject request) {
+		String destinationIP = getDestinationIP(request);
+		super.udphandler.sendUDPMessage(request.toString(), destinationIP);
+	}
+
 	@Override
 	public synchronized void messageReceived(String message) {
 		try {
@@ -134,7 +139,7 @@ public class Proxy extends NetworkInterface {
 								NetworkConstants.CLIENT_CAPACITY_ERROR);
 						object.getJSONObject(NetworkConstants.PAYLOAD).put(
 								NetworkConstants.STATUS, false);
-						forwardMessage(object);
+						forwardUDPMessage(object);
 						return;
 					}
 				} else {
@@ -147,7 +152,7 @@ public class Proxy extends NetworkInterface {
 								NetworkConstants.PROXY_CAPACITY_ERROR);
 						object.getJSONObject(NetworkConstants.PAYLOAD).put(
 								NetworkConstants.STATUS, false);
-						forwardMessage(object);
+						forwardUDPMessage(object);
 						return;
 					}
 				}
@@ -157,10 +162,11 @@ public class Proxy extends NetworkInterface {
 
 			case NetworkConstants.JOIN_RESPONSE:
 				removeSelfIP(object);
+				boolean isClient = isClient(object);
 				if (object.has(NetworkConstants.PAYLOAD)
 						&& object.getJSONObject(NetworkConstants.PAYLOAD)
 								.getBoolean(NetworkConstants.STATUS)) {
-					if (isClient(object)) {
+					if (isClient) {
 						currentClientCapacity++;
 					} else {
 						currentProxyCapacity++;
@@ -170,19 +176,15 @@ public class Proxy extends NetworkInterface {
 							NetworkConstants.PAYLOAD).getString(
 							NetworkConstants.GROUP_NAME);
 					addGroup(destinationIP, groupName);
-					forwardMessage(object);
-				} else {
-					object.getJSONObject(NetworkConstants.PAYLOAD).put(
-							NetworkConstants.MESSAGE,
-							NetworkConstants.SERVER_CAPACITY_ERROR);
-					forwardMessage(object);
 				}
+				if (isClient)
+					forwardUDPMessage(object);
+				else
+					forwardMessage(object);
 				break;
 
 			case NetworkConstants.LEAVE_CLIENT:
 				removeFromGroup(object);
-				object = addIPToSource(object);
-				parentHandler.sendMessage(object.toString());
 				break;
 
 			case NetworkConstants.DATA:
@@ -207,11 +209,11 @@ public class Proxy extends NetworkInterface {
 				object.getJSONObject(NetworkConstants.PAYLOAD).put(
 						NetworkConstants.IS_LAST, true);
 				groupMap.remove(groupName);
+				object = addIPToSource(object);
+				parentHandler.sendMessage(object.toString());
 			} else if (object.getJSONObject(NetworkConstants.PAYLOAD)
 					.getBoolean(NetworkConstants.IS_LAST)) {
 				groupMap.get(groupName).remove(getDestinationIP(object));
-				object.getJSONObject(NetworkConstants.PAYLOAD).put(
-						NetworkConstants.IS_LAST, false);
 			}
 		} catch (JSONException e) {
 			e.printStackTrace();

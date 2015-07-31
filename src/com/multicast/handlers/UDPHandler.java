@@ -57,7 +57,6 @@ public class UDPHandler implements Runnable {
 	}
 
 	public void run() {
-		final byte[] buf = new byte[1024];
 
 		new Thread() {
 			DatagramPacket receivePacket;
@@ -65,6 +64,7 @@ public class UDPHandler implements Runnable {
 			@Override
 			public void run() {
 				while (isRunning) {
+					byte[] buf = new byte[1024];
 					receivePacket = new DatagramPacket(buf, buf.length);
 					try {
 						mUDPSocket.receive(receivePacket);

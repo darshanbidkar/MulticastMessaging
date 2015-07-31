@@ -6,6 +6,7 @@ package com.multicast;
 import java.net.Socket;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -19,8 +20,6 @@ import com.multicast.networking.NetworkInterface;
  */
 public class Server extends NetworkInterface {
 
-	// private HashMap<String, ArrayList<String>> proxyMap = new HashMap<String,
-	// ArrayList<String>>();
 	private HashMap<String, HashSet<String>> groupMap;
 	private HashMap<String, TCPHandler> childConnectionMap;
 	private final int STREAM_CAPACITY = 5;
@@ -123,12 +122,30 @@ public class Server extends NetworkInterface {
 				break;
 
 			case NetworkConstants.DATA:
-				// TODO
+				String groupName = object.getJSONObject(
+						NetworkConstants.PAYLOAD).getString(
+						NetworkConstants.GROUP_NAME);
+				sendMulticastData(object, groupName);
 				break;
 
 			}
 		} catch (JSONException e) {
 			e.printStackTrace();
+		}
+	}
+
+	private void sendMulticastData(JSONObject request, String groupName) {
+		if (!groupMap.containsKey(groupName))
+			return;
+		HashSet<String> groupIPs = groupMap.get(groupName);
+		Iterator<String> iterator = groupIPs.iterator();
+		String destinationIP = getDestinationIP(request);
+		while (iterator.hasNext()) {
+			String ip = iterator.next();
+			if (ip.equalsIgnoreCase(destinationIP))
+				continue;
+			TCPHandler childHandler = childConnectionMap.get(ip);
+			childHandler.sendMessage(request.toString());
 		}
 	}
 

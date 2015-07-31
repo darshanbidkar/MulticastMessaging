@@ -11,7 +11,6 @@ import java.util.Scanner;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.multicast.handlers.TCPHandler;
 import com.multicast.networking.NetworkInterface;
 
 /**
@@ -20,7 +19,7 @@ import com.multicast.networking.NetworkInterface;
  */
 public class Client extends NetworkInterface {
 
-	private TCPHandler parentHandler;
+	// private TCPHandler parentHandler;
 	private String groupName;
 	private String parentIP;
 
@@ -30,7 +29,6 @@ public class Client extends NetworkInterface {
 		super(false);
 		this.parentIP = parentIP;
 		this.groupName = groupName;
-		parentHandler = super.createClientSocket(parentIP);
 		try {
 			selfIP = InetAddress.getLocalHost().getHostAddress();
 		} catch (UnknownHostException e) {
@@ -47,7 +45,7 @@ public class Client extends NetworkInterface {
 			payload.put(NetworkConstants.SOURCE, selfIP);
 			payload.put(NetworkConstants.GROUP_NAME, groupName);
 			object.put(NetworkConstants.PAYLOAD, payload);
-			parentHandler.sendMessage(object.toString());
+			super.udphandler.sendUDPMessage(object.toString(), parentIP);
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
@@ -62,7 +60,7 @@ public class Client extends NetworkInterface {
 			payload.put(NetworkConstants.GROUP_NAME, groupName);
 			payload.put(NetworkConstants.IS_LAST, true);
 			object.put(NetworkConstants.PAYLOAD, payload);
-			parentHandler.sendMessage(object.toString());
+			super.udphandler.sendUDPMessage(object.toString(), parentIP);
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
