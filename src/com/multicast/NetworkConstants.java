@@ -27,5 +27,6 @@ public class NetworkConstants {
 	public static final String LEAVE_RESPONSE = "leave_response";
 	public static final String IS_LAST = "is_last";
 	public static final String CLIENT_SERVER_CONNECT_ERROR = "Cannot connect directly to server";
+	public static final String IS_UPSTREAM_MESSAGE = "is_upstream";
 
 }

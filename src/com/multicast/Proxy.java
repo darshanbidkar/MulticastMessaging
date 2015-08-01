@@ -8,6 +8,7 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -188,9 +189,41 @@ public class Proxy extends NetworkInterface {
 				break;
 
 			case NetworkConstants.DATA:
-				// TODO
+				sendToChildren(new JSONObject(object.toString()));
+				if (object.getJSONObject(NetworkConstants.PAYLOAD).getBoolean(
+						NetworkConstants.IS_UPSTREAM_MESSAGE)) {
+					parentHandler.sendMessage(object.toString());
+				}
 				break;
+			}
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+	}
 
+	private void sendToChildren(JSONObject object) {
+		try {
+			String destinationIP = getDestinationIP(object);
+			object.getJSONObject(NetworkConstants.PAYLOAD).remove(
+					NetworkConstants.SOURCE);
+			object.getJSONObject(NetworkConstants.PAYLOAD).put(
+					NetworkConstants.SOURCE, selfIP);
+			object.getJSONObject(NetworkConstants.PAYLOAD).remove(
+					NetworkConstants.IS_UPSTREAM_MESSAGE);
+			object.getJSONObject(NetworkConstants.PAYLOAD).put(
+					NetworkConstants.IS_UPSTREAM_MESSAGE, false);
+			String groupName = object.getJSONObject(NetworkConstants.PAYLOAD)
+					.getString(NetworkConstants.GROUP_NAME);
+			Iterator<String> childrenIPs = groupMap.get(groupName).iterator();
+			while (childrenIPs.hasNext()) {
+				String ip = childrenIPs.next();
+				if (destinationIP.equalsIgnoreCase(ip))
+					continue;
+				if (childConnectionMap.containsKey(ip)) {
+					childConnectionMap.get(ip).sendMessage(object.toString());
+				} else {
+					super.udphandler.sendUDPMessage(object.toString(), ip);
+				}
 			}
 		} catch (JSONException e) {
 			e.printStackTrace();

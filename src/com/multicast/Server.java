@@ -125,6 +125,8 @@ public class Server extends NetworkInterface {
 				String groupName = object.getJSONObject(
 						NetworkConstants.PAYLOAD).getString(
 						NetworkConstants.GROUP_NAME);
+				object.getJSONObject(NetworkConstants.PAYLOAD).put(
+						NetworkConstants.IS_UPSTREAM_MESSAGE, false);
 				sendMulticastData(object, groupName);
 				break;
 
@@ -139,7 +141,13 @@ public class Server extends NetworkInterface {
 			return;
 		HashSet<String> groupIPs = groupMap.get(groupName);
 		Iterator<String> iterator = groupIPs.iterator();
-		String destinationIP = getDestinationIP(request);
+		String destinationIP = "";
+		try {
+			request.getJSONObject(NetworkConstants.PAYLOAD).getString(
+					NetworkConstants.SOURCE);
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
 		while (iterator.hasNext()) {
 			String ip = iterator.next();
 			if (ip.equalsIgnoreCase(destinationIP))

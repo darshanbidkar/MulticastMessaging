@@ -72,6 +72,9 @@ public class Client extends NetworkInterface {
 			messageObject.put(NetworkConstants.TYPE, NetworkConstants.DATA);
 			JSONObject payload = new JSONObject();
 			payload.put(NetworkConstants.DATA, message);
+			payload.put(NetworkConstants.SOURCE, selfIP);
+			payload.put(NetworkConstants.GROUP_NAME, groupName);
+			payload.put(NetworkConstants.IS_UPSTREAM_MESSAGE, true);
 			messageObject.put(NetworkConstants.PAYLOAD, payload);
 			return messageObject;
 		} catch (JSONException e) {
@@ -120,6 +123,11 @@ public class Client extends NetworkInterface {
 					super.closeServers();
 					System.exit(0);
 				}
+				break;
+			case NetworkConstants.DATA:
+				System.out.println(object.getJSONObject(
+						NetworkConstants.PAYLOAD).getString(
+						NetworkConstants.DATA));
 				break;
 			}
 		} catch (JSONException e) {

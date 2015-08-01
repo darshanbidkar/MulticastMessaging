@@ -82,7 +82,6 @@ public class TCPHandler implements Runnable {
 			try {
 				message = mReader.readLine();
 				// while ((message = mReader.readLine()) != null) {
-				System.out.println("Client: " + message);
 				// }
 			} catch (IOException e) {
 				e.printStackTrace();
