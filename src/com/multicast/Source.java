@@ -20,7 +20,7 @@ public class Source extends NetworkInterface {
 	private TCPHandler parentHandler;
 
 	public Source(String serverIP, String groupName) {
-		parentHandler = super.createClientSocket(serverIP);
+		super(false);
 		this.groupName = groupName;
 		this.serverIP = serverIP;
 		try {
@@ -52,19 +52,20 @@ public class Source extends NetworkInterface {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		Source source = new Source("10.21.17.226", "RED");
+		Source source = new Source(args[0], args[1]);
 		
 		//User type any multicast message
 		Scanner scanner = new Scanner(System.in);
 		String message = scanner.nextLine();
 		while (!message.equalsIgnoreCase("end")) {
 			JSONObject object = source.createMessage(message);
-			source.parentHandler.sendMessage(object.toString());
+			source.udphandler
+					.sendUDPMessage(object.toString(), source.serverIP);
 			message = scanner.nextLine();
 		}
 		scanner.close();
 		System.out.println("Leaving group: " + source.groupName);
-		source.closeTCPServer();
+		source.closeServers();
 	}
 
 	@Override
