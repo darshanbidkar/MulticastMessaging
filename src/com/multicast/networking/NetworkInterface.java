@@ -87,7 +87,7 @@ public abstract class NetworkInterface {
 		return null;
 	}
 
-	private void closeTCPServer() {
+	protected void closeTCPServer() {
 		this.isRunning = false;
 		if (this.mServerSocket != null) {
 			System.out.println("closing server");
